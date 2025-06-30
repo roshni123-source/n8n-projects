@@ -1,0 +1,454 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "test form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "first name"
+            },
+            {
+              "fieldLabel": "last name"
+            },
+            {
+              "fieldLabel": "number",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "budget",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "0-100$"
+                  },
+                  {
+                    "option": "100-1000$"
+                  },
+                  {
+                    "option": "1000-10000$"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1060,
+        -100
+      ],
+      "id": "bfdbd348-649d-4cde-b3a5-b224da86a575",
+      "name": "On form submission",
+      "webhookId": "dcdf141c-05bd-45e7-a3ef-438c538aa70f"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b99e35e3-6dcc-40a6-b0cb-6118b6e1ab6e",
+              "leftValue": "string",
+              "rightValue": "0-100$",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -760,
+        -100
+      ],
+      "id": "7bed6a04-b1b8-46c8-9ec6-7cbfa970b602",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.budget }}",
+                    "rightValue": "100-1000$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "40d7b989-3438-4d31-9d5c-24ce92c26db1"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9025d6f7-71e8-459f-aaab-03977f500746",
+                    "leftValue": "={{ $json.budget }}",
+                    "rightValue": "1000-10000$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -620,
+        -100
+      ],
+      "id": "f9853d27-953a-4556-a313-c16c0b7edbe0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "hello, this is the notification for you",
+        "emailType": "text",
+        "message": "hello, i am very glad to inform you that your budget is accepted",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -460,
+        -180
+      ],
+      "id": "0da3bac8-52cb-40b0-8c1a-28a2013595f0",
+      "name": "Gmail",
+      "webhookId": "caf203eb-57ef-4d55-bed7-3528597233e8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hOfpVqEwxSEJey8Z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "this is for your inquiry",
+        "emailType": "text",
+        "message": "hello",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -460,
+        20
+      ],
+      "id": "d343b6db-bcaa-46b8-8bdd-7e36912975ec",
+      "name": "Gmail1",
+      "webhookId": "b9e8b089-0c0c-4d43-a7e5-74b33fd33975",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hOfpVqEwxSEJey8Z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -240,
+        -100
+      ],
+      "id": "6f3138be-3465-4527-bc3f-0cd38b657a48",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Filter').item.json.email }}",
+        "subject": "hello",
+        "emailType": "text",
+        "message": "this one is for you",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -60,
+        -100
+      ],
+      "id": "8f334bb9-6d9d-4184-99da-c84beb0ba88a",
+      "name": "Gmail2",
+      "webhookId": "fcae5764-a76d-4ccd-98c3-9c601044f881",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hOfpVqEwxSEJey8Z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lmoVqkYWssGWNUIHxCUvqcbK0bUq4VElG2Kio0gSfow",
+          "mode": "list",
+          "cachedResultName": "sheet-data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmoVqkYWssGWNUIHxCUvqcbK0bUq4VElG2Kio0gSfow/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmoVqkYWssGWNUIHxCUvqcbK0bUq4VElG2Kio0gSfow/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "first name": "={{ $json['first name'] }}",
+            "last name": "={{ $json['last name'] }}",
+            "number": "={{ $json.number }}",
+            "budget": "={{ $json.budget }}",
+            "email": "={{ $json.email }}",
+            "date": "={{ $today}}",
+            "rejected": "={{ $if($json.budget==\"0-100$\",\"TRUE\",\"FALSE\") }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "first name",
+              "displayName": "first name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last name",
+              "displayName": "last name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "number",
+              "displayName": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -920,
+        -100
+      ],
+      "id": "956e90da-3501-43fb-bbe2-41c551d7c4ff",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LGO0j5TlgZ7XgQpg",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fb5a3191-52da-49cb-928b-c050ad37da2e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ce352a81caf5a05dd7bdcef03235b26e0ea9e78c46b09163d23a2828d165cc0"
+  },
+  "id": "DOWRY9BBpJOvsIwr",
+  "tags": []
+}

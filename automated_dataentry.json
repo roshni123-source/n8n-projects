@@ -1,0 +1,281 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -680,
+        -80
+      ],
+      "id": "f3350354-df04-43e0-9300-c020a4f3ce41",
+      "name": "When chat message received",
+      "webhookId": "908a91ad-bbd3-45fc-bcb6-476f5ceb415c"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a helpful assistant. today is {{\"$now\"}}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        -80
+      ],
+      "id": "64fe511f-985d-4080-847a-144ad1ce6462",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -580,
+        120
+      ],
+      "id": "659b7826-f341-4759-8765-6dc55a9b806b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "f0bsEofCjxgQTv98",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -460,
+        120
+      ],
+      "id": "58aa17b0-5ed7-4e3f-93da-156a1571d719",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appX01bHKkzb2QgJm",
+          "mode": "list",
+          "cachedResultName": "data",
+          "cachedResultUrl": "https://airtable.com/appX01bHKkzb2QgJm"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblhLcJ69rzhMAm1W",
+          "mode": "list",
+          "cachedResultName": "event",
+          "cachedResultUrl": "https://airtable.com/appX01bHKkzb2QgJm/tblhLcJ69rzhMAm1W"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "start time": "={{ $json.event_startTime }}",
+            "end time": "={{ $json.event_endTime }}",
+            "title": "={{ $json.event_title }}",
+            "description": "={{ $json.event_Description }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "start time",
+              "displayName": "start time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "end time",
+              "displayName": "end time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        40,
+        -80
+      ],
+      "id": "bf7d66aa-4349-4e3a-8eac-d6572b07195d",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4tYUexntUjoH7Muv",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n{\n\t\"event_title\": \"event_title\",\n\t\"event_Description\": \"descrption of event\",\n  \"event_startTime\":\"start time of event\",\n  \"event_endTime\": \"end time of event\"\n},\n{\n\t\"event_title\": \"event_title\",\n\t\"event_Description\": \"descrption of event\",\n  \"event_startTime\":\"start time of event\",\n  \"event_endTime\": \"end time of event\"\n}\n]"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -340,
+        120
+      ],
+      "id": "8560c691-5c96-46b7-8508-c09df94870e6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -80
+      ],
+      "id": "a5e89d62-f344-4049-bc18-f24738c8ce0b",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "503fffa5-6bb4-44c4-8bef-d06f3a7125ee",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ce352a81caf5a05dd7bdcef03235b26e0ea9e78c46b09163d23a2828d165cc0"
+  },
+  "id": "Ntp3tphNZkxReZdd",
+  "tags": []
+}
